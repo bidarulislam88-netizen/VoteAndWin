@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vote & Win Rewards</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #001f3f, #0074D9);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      padding: 60px 20px;
+      transition: all 0.5s ease;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    .vote-box {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+    .team {
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      border: none;
+      border-radius: 25px;
+      padding: 18px 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .team:nth-child(2) {
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+    }
+    .team:hover {
+      transform: scale(1.07);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+    .footer {
+      margin-top: 60px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    .thankyou {
+      display: none;
+      margin-top: 50px;
+      font-size: 22px;
+      color: #ffdc00;
+      font-weight: 600;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    .prediction {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .bar-container {
+      width: 80%;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      margin: 10px auto;
+      overflow: hidden;
+      height: 25px;
+    }
+    .bar {
+      height: 100%;
+      text-align: right;
+      padding-right: 10px;
+      font-size: 14px;
+      line-height: 25px;
+      color: #fff;
+      transition: width 0.5s ease;
+    }
+    .bar.barcelona {
+      background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    }
+    .bar.madrid {
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h1>⚽ Who will win today’s match?</h1>
+  <p>Vote now and stand a chance to win exclusive rewards! 🎁</p>
+
+  <div class="vote-box">
+    <div class="team" onclick="vote('Barcelona')">Bangladesh</div>
+    <div class="team" onclick="vote('Real Madrid')">India</div>
+  </div>
+
+  <p class="footer">10 lucky voters will win rewards after the match!</p>
+
+  <div class="thankyou" id="thankyou">🎉 Thank you for your vote!</div>
+
+  <div class="prediction" id="prediction">
+    <h2>📊 Live Prediction Result</h2>
+    <div class="bar-container">
+      <div class="bar barcelona" id="barcelonaBar">0%</div>
+    </div>
+    <div class="bar-container">
+      <div class="bar madrid" id="madridBar">0%</div>
+    </div>
+  </div>
+
+  <script>
+    function vote(team) {
+      // Get previous votes
+      let barcelonaVotes = parseInt(localStorage.getItem("barcelonaVotes") || "0");
+      let madridVotes = parseInt(localStorage.getItem("madridVotes") || "0");
+
+      // Add vote
+      if (team === "Barcelona") barcelonaVotes++;
+      if (team === "Real Madrid") madridVotes++;
+
+      // Save votes
+      localStorage.setItem("barcelonaVotes", barcelonaVotes);
+      localStorage.setItem("madridVotes", madridVotes);
+      localStorage.setItem("voted", "true");
+
+      // Redirect to external link
+      const adsterraLink = "https://your-adsterra-direct-link.com";
+      window.location.href = adsterraLink;
+    }
+
+    function updatePrediction() {
+      const barcelonaVotes = parseInt(localStorage.getItem("barcelonaVotes") || "0");
+      const madridVotes = parseInt(localStorage.getItem("madridVotes") || "0");
+      const total = barcelonaVotes + madridVotes;
+
+      let barcelonaPercent = 0;
+      let madridPercent = 0;
+
+      if (total > 0) {
+        barcelonaPercent = Math.round((barcelonaVotes / total) * 100);
+        madridPercent = Math.round((madridVotes / total) * 100);
+      }
+
+      document.getElementById("barcelonaBar").style.width = barcelonaPercent + "%";
+      document.getElementById("barcelonaBar").textContent = barcelonaPercent + "%";
+      document.getElementById("madridBar").style.width = madridPercent + "%";
+      document.getElementById("madridBar").textContent = madridPercent + "%";
+    }
+
+    // প্রথম থেকেই prediction দেখাবে
+    updatePrediction();
+
+    // Back এ আসলে Thank you দেখাবে
+    window.addEventListener("pageshow", () => {
+      if (localStorage.getItem("voted") === "true") {
+        document.querySelector(".vote-box").style.display = "none";
+        document.querySelector(".footer").style.display = "none";
+        document.getElementById("thankyou").style.display = "block";
+        updatePrediction();
+        localStorage.removeItem("voted");
+      }
+    });
+  </script>
+</body>
+</html>
